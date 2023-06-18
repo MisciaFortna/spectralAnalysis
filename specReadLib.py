@@ -17,7 +17,10 @@
 #       @Inputs:
 #           * dataLib: The Dictionary of Particle Dataframes
 #           * particle: Str of Specific Particle to Graph
-#           * bins: Number of Energy Bins
+#           * kwargs:
+#               -- bins: Number of Energy Bins (default is 20)
+#               -- maxE: Maximum Energy Bin (default is set max)
+#               -- figdim: pandas fig size
 #       @Outputs: the figure of the plot
 #   - degRatio : returns dataframe of ratio between neutrons and other particles
 #       @Inputs:
@@ -70,6 +73,23 @@ def ePlot(dataLib, particle, bins):
     for j in range(0,bins + 1):
         binList[j] = step * j
     plot = dataLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [0, dataLib[particle]['energy'].max()], xlabel = 'Energy (MeV)', figsize = [15,10], grid = 1)
+    fig = plot.get_figure()
+    return fig
+
+# bins
+# maxE
+# figdim
+def ePlot(dataLib, particle, **kwargs):
+    defaultKwargs = { 'bins': 20, 'maxE': dataLib[particle]['energy'].max(), 'figdim': [15,10] }
+    kwargs = { **defaultKwargs, **kwargs }
+    bins = kwargs['bins']
+    binList = [0] * (bins + 1)
+    maxE = kwargs['maxE']
+    step = maxE / bins
+    figdim = kwargs['figdim']
+    for j in range(0,bins + 1):
+        binList[j] = step * j
+    plot = dataLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [0, maxE], xlabel = 'Energy (MeV)', figsize = figdim, grid = 1)
     fig = plot.get_figure()
     return fig
 
