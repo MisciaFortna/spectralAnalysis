@@ -69,7 +69,7 @@ def ePlot(dataLib, particle, bins):
     step = dataLib[particle]['energy'].max() / bins
     for j in range(0,bins + 1):
         binList[j] = step * j
-    plot = dataLib[i].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [0, dataLib[i]['energy'].max()], xlabel = 'Energy (MeV)', figsize = [15,10], grid = 1)
+    plot = dataLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [0, dataLib[particle]['energy'].max()], xlabel = 'Energy (MeV)', figsize = [15,10], grid = 1)
     fig = plot.get_figure()
     return fig
 
