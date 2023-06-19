@@ -20,7 +20,8 @@
 #           * kwargs:
 #               -- bins: Number of Energy Bins (default is 20)
 #               -- maxE: Maximum Energy Bin (default is set max)
-#               -- figdim: pandas fig size
+#               -- minE: Minimum Energy Bin (default is set to 0)
+#               -- figdim: pandas fig size (default is set to [15, 10])
 #       @Outputs: the figure of the plot
 #   - degRatio : returns dataframe of ratio between neutrons and other particles
 #       @Inputs:
@@ -67,29 +68,22 @@ def read_val(fName, particles, save):
     else:
         return dataLib
 
-def ePlot(dataLib, particle, bins):
-    binList = [0] * (bins + 1)
-    step = dataLib[particle]['energy'].max() / bins
-    for j in range(0,bins + 1):
-        binList[j] = step * j
-    plot = dataLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [0, dataLib[particle]['energy'].max()], xlabel = 'Energy (MeV)', figsize = [15,10], grid = 1)
-    fig = plot.get_figure()
-    return fig
-
 # bins
 # maxE
+# minE
 # figdim
 def ePlot(dataLib, particle, **kwargs):
-    defaultKwargs = { 'bins': 20, 'maxE': dataLib[particle]['energy'].max(), 'figdim': [15,10] }
+    defaultKwargs = { 'bins': 20, 'maxE': dataLib[particle]['energy'].max(), 'minE': 0, 'figdim': [15,10] }
     kwargs = { **defaultKwargs, **kwargs }
     bins = kwargs['bins']
     binList = [0] * (bins + 1)
     maxE = kwargs['maxE']
-    step = maxE / bins
+    minE = kwargs['minE']
+    step = (maxE-minE) / bins
     figdim = kwargs['figdim']
     for j in range(0,bins + 1):
         binList[j] = step * j
-    plot = dataLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [0, maxE], xlabel = 'Energy (MeV)', figsize = figdim, grid = 1)
+    plot = dataLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [minE, maxE], xlabel = 'Energy (MeV)', figsize = figdim, grid = 1)
     fig = plot.get_figure()
     return fig
 
