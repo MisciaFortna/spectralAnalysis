@@ -8,8 +8,9 @@
 #   - read_val: creates a dictionary of particle information
 #       @Inputs:
 #           * fName: File Name of CSV (sans file type)
-#           * particles: Str List of Particle ID Numbers
-#           * save: Bool Value if Save or Not
+#           * kwargs: 
+#               -- particles: Str List of Particle ID Numbers
+#               -- save: Bool Value if Save or Not
 #       @Outputs:
 #           * Returned Dictionary
 #           * Collection of Particle-Filtered CSV Files
@@ -50,9 +51,12 @@ def txt_2_csv(fName):
     edit_output.pop('empty')
     edit_output.to_csv(output_file, index = False)
 
-def read_val(fName, particles, save):
+def read_val(fName,**kwargs):
+    defaultKwargs = { 'save': False, 'particles': data['particle'].unique().tolist()}
+    kwargs = { **defaultKwargs, **kwargs }
     input_file = fName + ".csv"
     data = pd.read_csv(input_file, index_col = False)
+    particles = kwargs['particles']
     dataLib = {}
 
     for i in particles:
@@ -61,7 +65,7 @@ def read_val(fName, particles, save):
         data_temp.pop('index')
         dataLib[i] = data_temp
 
-    if save:
+    if kwargs['save']:
         for i in particles:
             output = fName + "_" + i + ".csv"
             dataLib[i].to_csv(output, index = False)
