@@ -52,11 +52,16 @@ def txt_2_csv(fName):
     edit_output.to_csv(output_file, index = False)
 
 def read_val(fName,**kwargs):
-    defaultKwargs = { 'save': False, 'particles': data['particle'].unique().tolist()}
+    defaultKwargs = { 'save': False, 'particles': ['default']}
     kwargs = { **defaultKwargs, **kwargs }
     input_file = fName + ".csv"
     data = pd.read_csv(input_file, index_col = False)
-    particles = kwargs['particles']
+    if kwargs['particles'] == ['default']:
+        particles = data['particle'].unique().tolist()
+        for i in range(len(particles)):
+            particles[i] = str(particles[i])
+    else:
+        particles = kwargs['particles']
     dataLib = {}
 
     for i in particles:
