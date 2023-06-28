@@ -2,7 +2,10 @@
 # @Author: Miscia Fortna
 # @Date: 15.06.2023
 # @Description: Library of Spectral Reading Functions from Previous Scripts
-#   - txt_2_csv: converts txt file to csv
+#   - phsp_2_csv: converts phsp file to csv
+#       @Inputs: fName: File Name (sans file type)
+#       @Outputs: A Saved CSV File
+#   - txt_2_csv: converts txt file to csv (NB txt file MUST BE COMMA DELIM AT BEGINNING OF LINES)
 #       @Inputs: fName: File Name (sans file type)
 #       @Outputs: A Saved CSV File
 #   - read_val: creates a dictionary of particle information
@@ -36,6 +39,29 @@ import pandas as pd
 import csv
 import math
 import matplotlib.pyplot as plt
+
+def phsp_2_csv(fName):
+
+    input_file = fName + ".phsp"
+    output_file = fName + ".csv"
+
+    with open(input_file) as f, NamedTemporaryFile("w", dir=".", delete = False) as temp:
+
+        for line in f:
+            lineTemp = ' ' + line.strip()
+            lineTemp = re.sub("\s+", ",", lineTemp)
+            print(lineTemp, file=temp)
+
+        with open(temp.name, 'r') as infile:
+            stripped = (line.strip() for line in infile)
+            lines = (line.split(",") for line in stripped if line)
+            with open(output_file, 'w') as outfile:
+                writer = csv.writer(outfile)
+                writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
+                writer.writerows(lines)
+    edit_output = pd.read_csv(output_file, index_col = False)
+    edit_output.pop('empty')
+    edit_output.to_csv(output_file, index = False)
 
 def txt_2_csv(fName):
     input_file = fName + ".txt"
