@@ -6,22 +6,14 @@ Scripts for Graphing Spectral Data Using Standard TOPAS PHSP Phase-Space Data Fi
 git clone 'SSH-Key'
 ## Usage
 ### reader.py
-Reader for obtaining csv files and energy histograms of sphere shell data
-* python3 reader.py -t dataFile.txt
-* python3 reader.py -r dataFile.csv -d 10 --scatter
-### genReader.py
-General reader for standard energy histograms 
-* python3 genReader.py -t dataFile.txt
-* python3 genReader.py -r dataFile.csv -p '22' -p '2112' -p '2212' -s
-### neutronRatio.py
-Gives a histogram of ratio of neutrons to photons and protons with respect to 10 degree bins around beamline
-* python3 neutronRatio.py -n dataFile.csv
-### specReadLib.py
-Spectral Data Library for additional functions
+Spectral Data Reading Library
+### plotting.py
+Spectral Data Plots Library
+### sphere.py
+Spectral Data Sphere Measurement Analysis Library
 ## Roadmap
-- [] Updating neutronRatio.py to be more user-friendly
 - [] Completing documentation for the scripts
-- [] Increase specReadLib module
+- [] Increase specAnalysis module content
 ## Contributing
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 
