@@ -63,7 +63,7 @@ def txt_2_csv(fName):
     edit_output.to_csv(output_file, index = False)
 
 def read_val(fName,**kwargs):
-    defaultKwargs = { 'save': False, 'particles': ['default']}
+    defaultKwargs = { 'save': False, 'particles': ['default']} # particles called 'default' just as an unexpected value for the condition
     kwargs = { **defaultKwargs, **kwargs }
     input_file = fName + ".csv"
     data = pd.read_csv(input_file, index_col = False)

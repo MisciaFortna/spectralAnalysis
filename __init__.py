@@ -3,7 +3,7 @@ from spectralAnalysis.plotting import (
         eComp,
 )
 
-from spectralAnalysis.specReadLib import (
+from spectralAnalysis.reader import (
         phsp_2_csv,
         txt_2_csv,
         read_val,

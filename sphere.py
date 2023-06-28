@@ -5,16 +5,21 @@
 #   - degRatio : returns dataframe of ratio between neutrons and other particles
 #       @Inputs:
 #           * dataLib: Dictionary of Particle Dataframes
-#           * box: Height of Dosimeter Box for Flux
+#           * box: Height of Dosimeter Box for Flux in cm
 #           * degBins: Number of Degree Bins
 #           * center: The Center Position Along Beam Line
 #       @Outputs: Dataframe of Ratio Data
+#       @Notes:
+#           * Assumed that beam is along z axis positive to negative
+#           * 0 Degrees is towards beamline
 import pandas as pd
 import csv
 import math
 import matplotlib.pyplot as plt
 
-def degRatio(dataLib, box, degBins, center):
+def degRatio(dataLib, center, **kwargs):
+    defaultKwargs = { 'degBins': 10, 'box' : 5 }
+    kwargs = { **defaultKwargs, **kwargs }
     particles = list(dataLib.keys())
     dataSet = []
 
