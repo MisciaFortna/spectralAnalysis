@@ -56,11 +56,11 @@ def eComp(firstLib, secondLib, particle, **kwargs):
     
     if particle == "frag":
 
-        difference = list(set(firstLib.keys()) - set(secondLib.keys())
+        difference = list(set(firstLib.keys()) - set(secondLib.keys()))
         for value in difference:
             firstLib.pop(value)
 
-        difference = list(set(secondLib.keys()) - set(firstLib.keys())
+        difference = list(set(secondLib.keys()) - set(firstLib.keys()))
         for value in difference:
             secondLib.pop(value)
 
