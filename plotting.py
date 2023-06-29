@@ -46,7 +46,10 @@ def ePlot(dataLib, particle, **kwargs):
     fig = plot.get_figure()
     return fig
 
-# returns fig
+# bins
+# maxE
+# mineE
+# figdim
 def eComp(firstLib, secondLib, particle, **kwargs):
     defaultKwargs = { 'bins': 20, 'maxE': 0, 'minE': 0, 'figdim': [15,10] }
     kwargs = { **defaultKwargs, **kwargs }

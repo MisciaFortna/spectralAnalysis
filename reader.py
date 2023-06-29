@@ -17,6 +17,13 @@
 #       @Outputs:
 #           * Returned Dictionary
 #           * Collection of Particle-Filtered CSV Files
+#   - save_val: redundant save function
+#       @Inputs:
+#           * fName: File Name of CSV (sans file type)
+#           * kwargs: 
+#               -- particles: Str List of Particle ID Numbers
+#       @Outputs:
+#           * Collection of Particle-Filtered CSV Files
 import pandas as pd
 import csv
 import math
@@ -62,6 +69,8 @@ def txt_2_csv(fName):
     edit_output.pop('empty')
     edit_output.to_csv(output_file, index = False)
 
+# b1 save
+# vf4 particles
 def read_val(fName,**kwargs):
     defaultKwargs = { 'save': False, 'particles': ['default']} # particles called 'default' just as an unexpected value for the condition
     kwargs = { **defaultKwargs, **kwargs }
@@ -85,5 +94,24 @@ def read_val(fName,**kwargs):
         for i in particles:
             output = fName + "_" + i + ".csv"
             dataLib[i].to_csv(output, index = False)
+    return dataLib
+
+# vf4 particles
+def save_val(fname, **kwargs): # redundant save function
+    defaultKwargs = { 'particles': ['default']} # particles called 'default' just as an unexpected value for the condition
+    kwargs = { **defaultKwargs, **kwargs }
+    input_file = fName + ".csv"
+    data = pd.read_csv(input_file, index_col = False)
+    if kwargs['particles'] == ['default']:
+        particles = data['particle'].unique().tolist()
+        for i in range(len(particles)):
+            particles[i] = str(particles[i])
     else:
-        return dataLib
+        particles = kwargs['particles']
+
+    for i in particles:
+        data_temp = data[data['particle']== int(i)]
+        data_temp = data_temp.reset_index()
+        data_temp.pop('index')
+        output = fName + "_" + i + ".csv"
+        data_temp.to_csv(output, index = False)
