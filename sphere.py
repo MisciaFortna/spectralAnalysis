@@ -5,9 +5,10 @@
 #   - degRatio : returns dataframe of ratio between neutrons and other particles
 #       @Inputs:
 #           * dataLib: Dictionary of Particle Dataframes
-#           * box: Height of Dosimeter Box for Flux in cm
-#           * degBins: Number of Degree Bins
 #           * center: The Center Position Along Beam Line
+#           * kwargs:
+#               -- box: Height of Dosimeter Box for Flux in cm
+#               -- degBins: Number of Degree Bins
 #       @Outputs: Dataframe of Ratio Data
 #       @Notes:
 #           * Assumed that beam is along z axis positive to negative

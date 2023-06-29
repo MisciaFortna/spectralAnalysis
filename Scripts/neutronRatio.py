@@ -1,106 +1,53 @@
 # @Name: neutronRatio.py
 # @Author: Miscia Fortna
-# @Date: 14.06.2023
+# @Date: 28.06.2023
 # @Description: script to obtain a histogram of the ratio of neutrons to extra particles at a given degree bin
 import argparse
+import spectralAnalysis as sp
 import pandas as pd
 import csv
 import math
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description = 'script for neutron to photon+proton ratio') 
-parser.add_argument('-n',"--file_name", help = "input file (sans filetype)")
+parser.add_argument('-n',"--file_name", help = "input csv file (sans filetype)")
+parser.add_argument('-p', "--particles", nargs = '+', help = "input extra particles for ratio denominator")
+parser.add_argument('-c',"--center", help = "input distance to center of sphere from beam source")
+parser.add_argument('-b',"--box", default = 5, help = "input size of box in cm")
+parser.add_argument('-d',"--degBins", default = 10, help = "input number of degrees in each bin")
+parser.add_argument('-f', "--figsize", nargs = '+', default = [15, 10], help = "input figsize for plot")
 args = parser.parse_args()
 
-inputFile = args.file_name + ".csv"
-outputIMG = args.file_name + "_bar.png"
+inputParticles = args.particles
 
-data = pd.read_csv(inputFile, index_col = False)
+dataLib = sp.reader.read_val(args.file_name)
 
-# Photon
-data_22 = data[data['particle']== 22] # Filters for Photons
-data_22 = data_22[data_22['y']<=5]    # Filters for y-values below 5 cm
-data_22 = data_22[data_22['y']>=-5]   # Filters for y-values above -5 cm
+# particleLib Init
+data_temp = data[data['particle']== 2112]
+data_temp = data_temp.reset_index()
+data_temp.pop('index')
 
-data_22 = data_22.reset_index() # Adds new index tared
-data_22.pop('index')            # Removes previous index
-
-# Neutron
-data_2112 = data[data['particle']== 2112]
-data_2112 = data_2112[data_2112['y']<=5]
-data_2112 = data_2112[data_2112['y']>=-5]
-
-data_2112 = data_2112.reset_index()
-data_2112.pop('index')
-
-# Proton
-data_2212 = data[data['particle']== 2212]
-data_2212 = data_2212[data_2212['y']<=5]
-data_2212 = data_2212[data_2212['y']>=-5]
-
-data_2212 = data_2212.reset_index()
-data_2212.pop('index')
-
+particleLib = {'2112' : data_temp}
 # Extra Particles
 
-dataSet = [data_22, data_2212] # set of data frames for extra particles
+dataSet = [] # set of data frames for extra particles
 
-extraParticles = pd.concat(dataSet, ignore_index = True) # combines data frames into single data frame
-
-bins = list(range(0,370,10)) # don't know why this binning works
-
-denom = [0] * len(bins) # init of denominator of ratio (extra particles)
-
-numer = [0] * len(bins) # init of numerator of ratio (neutrons)
-
-angleSet = [0] * len(extraParticles) # init set of angles for entering into data frame
-
-for i in range(len(extraParticles)):
-    zPos = extraParticles['z'][i] + 162.5
-    xPos = extraParticles['x'][i]
+for i in inputParticles:
     
-    angle = math.atan2(xPos,zPos) * 180 / math.pi
+    data_temp = dataLib[dataLib['particle']== int(i) ]
+    data_temp = data_temp.reset_index()
+    data_temp.pop('index')
 
-    if xPos < 0:
-        angleSet[i] = angle + 360 # necessary for the bottom half of the circle
-    else:
-        angleSet[i] = angle
+    particleLib[i] = data_temp
 
-extraParticles['angle'] = angleSet
-
-angleSet = [0] * len(data_2112)
-
-for i in range(len(data_2112)):
-    zPos = data_2112['z'][i] + 162.5
-    xPos = data_2112['x'][i]
-    
-    angle = math.atan2(xPos,zPos) * 180 / math.pi
-
-    if xPos < 0:
-        angleSet[i] = angle + 360
-    else:
-        angleSet[i] = angle
-
-data_2112['angle'] = angleSet
-
-for i in range(1,37): # counts the number of particles in the given bin
-    denom[i-1] = len(extraParticles[extraParticles['angle'] < bins[i]]) - len(extraParticles[extraParticles['angle'] < bins[i-1]])
-    numer[i-1] = len(data_2112[data_2112['angle'] < bins[i]]) - len(data_2112[data_2112['angle'] < bins[i-1]])
-
-del denom[-1] # for some reason gives an additional element but I am too afraid to change the range
-del numer[-1]
-
-ratio = [0] * 36
-
-for i in range(36):
-    ratio[i] = numer[i] / denom[i]
-
-ratioData = pd.DataFrame({'bins':list(range(0,360,10)), 'frequency':ratio})
+ratioData = sp.sphere.degRatio(particleLib, args.center, box = args.box, degBins = args.degBins)
 
 titleValue = args.file_name
 
-plot = ratioData.plot.bar(x = 'bins', y = 'frequency', position = 0, width = 1, grid = True, title = titleValue, figsize = [10, 10])
+plot = ratioData.plot.bar(x = 'bins', y = 'frequency', position = 0, width = 1, grid = True, title = titleValue, figsize = args.figsize)
 
 fig = plot.get_figure()
+
+outputIMG = args.file_name + "_degRatio.png"
 
 fig.savefig(outputIMG)
