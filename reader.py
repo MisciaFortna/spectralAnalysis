@@ -32,9 +32,29 @@ import re
 from tempfile import NamedTemporaryFile
 from shutil import move
 
+column_names = []
+
+def colGen(fName):
+    column_names = []
+    default_columns = ['empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle']
+    iFile = fName + ".header"
+    with open(iFile, 'r') as file:
+        for line in file:
+            match = re.match(r'\s*(\d+): (.+)', line)
+            if match:
+                l_no = int(match.group(1))
+                if l_no >= 11:
+                    print(match.group(1))
+                    column_name = match.group(2).strip()
+                    column_names.append(column_name)
+
+    full_col_names = default_columns + column_names
+    return full_col_names
+
 def phsp_2_csv(fName):
 
     input_file = fName + ".phsp"
+    input_header = fName + ".header"
     output_file = fName + ".csv"
 
     with open(input_file) as f, NamedTemporaryFile("w", dir=".", delete = False) as temp:
@@ -49,7 +69,9 @@ def phsp_2_csv(fName):
             lines = (line.split(",") for line in stripped if line)
             with open(output_file, 'w') as outfile:
                 writer = csv.writer(outfile)
-                writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
+                full_names = colGen(input_header)
+                writer.writerow(full_names)
+                #writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
                 writer.writerows(lines)
     edit_output = pd.read_csv(output_file, index_col = False)
     edit_output.pop('empty')
@@ -57,13 +79,16 @@ def phsp_2_csv(fName):
 
 def txt_2_csv(fName):
     input_file = fName + ".txt"
+    input_header = fName + ".header"
     output_file = fName + ".csv"
     with open(input_file, 'r') as infile:
         stripped = (line.strip() for line in infile)
         lines = (line.split(",") for line in stripped if line)
         with open(output_file, 'w') as outfile:
             writer = csv.writer(outfile)
-            writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
+            full_names = colGen(input_header)
+            writer.writerow(full_names)
+            #writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
             writer.writerows(lines)
     edit_output = pd.read_csv(output_file, index_col = False)
     edit_output.pop('empty')
