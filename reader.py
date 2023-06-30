@@ -32,8 +32,7 @@ import re
 from tempfile import NamedTemporaryFile
 from shutil import move
 
-column_names = []
-
+# Private Function
 def colGen(fName):
     column_names = []
     default_columns = ['empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle']
