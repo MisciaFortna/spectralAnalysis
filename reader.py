@@ -2,10 +2,10 @@
 # @Author: Miscia Fortna
 # @Date: 15.06.2023
 # @Description: Library of Spectral Reading Functions from Previous Scripts
-#   - phsp_2_csv: converts phsp file to csv
+#   - phsp_2_csv: converts phsp file to csv (Needs header file otherwise gives default 10 columns)
 #       @Inputs: fName: File Name (sans file type)
 #       @Outputs: A Saved CSV File
-#   - txt_2_csv: converts txt file to csv (NB txt file MUST BE COMMA DELIM AT BEGINNING OF LINES)
+#   - txt_2_csv: converts txt file to csv (NB txt file MUST BE COMMA DELIM AT BEGINNING OF LINES)(Needs header file otherwise gives default 10 columns)
 #       @Inputs: fName: File Name (sans file type)
 #       @Outputs: A Saved CSV File
 #   - read_val: creates a dictionary of particle information
@@ -37,18 +37,24 @@ def colGen(fName):
     column_names = []
     default_columns = ['empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle']
     iFile = fName + ".header"
-    with open(iFile, 'r') as file:
-        for line in file:
-            match = re.match(r'\s*(\d+): (.+)', line)
-            if match:
-                l_no = int(match.group(1))
-                if l_no >= 11:
-                    print(match.group(1))
-                    column_name = match.group(2).strip()
-                    column_names.append(column_name)
+    try:
+       test = open(iFile, 'r')
+    except OSError:
+        return default_columns
+    else:
+        test.close()
+        with open(iFile, 'r') as file:
+            for line in file:
+                match = re.match(r'\s*(\d+): (.+)', line)
+                if match:
+                    l_no = int(match.group(1))
+                    if l_no >= 11:
+                        print(match.group(1))
+                        column_name = match.group(2).strip()
+                        column_names.append(column_name)
 
-    full_col_names = default_columns + column_names
-    return full_col_names
+        full_col_names = default_columns + column_names
+        return full_col_names
 
 def phsp_2_csv(fName):
 
