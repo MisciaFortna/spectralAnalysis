@@ -55,19 +55,43 @@ def phsp_2_csv(fName):
     edit_output.pop('empty')
     edit_output.to_csv(output_file, index = False)
 
-def txt_2_csv(fName):
+def txt_2_csv(fName, **kwargs):
+
+    defaultKwargs = { 'fixed': False }
+    kwargs = { **defaultKwargs, **kwargs }
+
     input_file = fName + ".txt"
     output_file = fName + ".csv"
-    with open(input_file, 'r') as infile:
-        stripped = (line.strip() for line in infile)
-        lines = (line.split(",") for line in stripped if line)
-        with open(output_file, 'w') as outfile:
-            writer = csv.writer(outfile)
-            writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
-            writer.writerows(lines)
-    edit_output = pd.read_csv(output_file, index_col = False)
-    edit_output.pop('empty')
-    edit_output.to_csv(output_file, index = False)
+
+    if kwargs['fixed']:
+        with open(input_file, 'r') as infile:
+            stripped = (line.strip() for line in infile)
+            lines = (line.split(",") for line in stripped if line)
+            with open(output_file, 'w') as outfile:
+                writer = csv.writer(outfile)
+                writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
+                writer.writerows(lines)
+        edit_output = pd.read_csv(output_file, index_col = False)
+        edit_output.pop('empty')
+        edit_output.to_csv(output_file, index = False)
+    else:
+        with open(input_file) as f, NamedTemporaryFile("w", dir=".", delete = False) as temp:
+    
+            for line in f:
+                lineTemp = ' ' + line.strip()
+                lineTemp = re.sub("\s+", ",", lineTemp)
+                print(lineTemp, file=temp)
+
+            with open(temp.name, 'r') as infile:
+                stripped = (line.strip() for line in infile)
+                lines = (line.split(",") for line in stripped if line)
+                with open(output_file, 'w') as outfile:
+                    writer = csv.writer(outfile)
+                    writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
+                    writer.writerows(lines)
+        edit_output = pd.read_csv(output_file, index_col = False)
+        edit_output.pop('empty')
+        edit_output.to_csv(output_file, index = False)
 
 # b1 save
 # vf4 particles
