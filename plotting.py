@@ -22,6 +22,8 @@
 #               -- maxE: Maximum Energy Bin (default is set max)
 #               -- minE: Minimum Energy Bin (default is set to 0)
 #               -- figdim: pandas fig size (default is set to [15, 10])
+#               -- s1: Surface 1 Name
+#               -- s2: Surface 2 Name
 import pandas as pd
 import csv
 import math
@@ -51,7 +53,7 @@ def ePlot(dataLib, particle, **kwargs):
 # mineE
 # figdim
 def eComp(firstLib, secondLib, particle, **kwargs):
-    defaultKwargs = { 'bins': 20, 'maxE': 0, 'minE': 0, 'figdim': [15,10] }
+    defaultKwargs = { 'bins': 20, 'maxE': 0, 'minE': 0, 'figdim': [15,10], 's1' : 'Surface 1', 's2' : 'Surface 2' }
     kwargs = { **defaultKwargs, **kwargs }
     
     if particle == "frag":
@@ -80,19 +82,19 @@ def eComp(firstLib, secondLib, particle, **kwargs):
             dataSet.append(secondLib[i])
     
         fragDenom = pd.concat(dataSet, ignore_index = 1)
-        together = {'Surface 1' : fragNumer['energy'], 'Surface 2' : fragDenom['energy'] }
+        together = {kwargs['s1'] : fragNumer['energy'], kwargs['s2'] : fragDenom['energy'] }
     
     else:
-        together = {'Surface 1' : firstLib[particle]['energy'], 'Surface 2' : secondLib[particle]['energy'] }
+        together = {kwargs['s1'] : firstLib[particle]['energy'], kwargs['s2'] : secondLib[particle]['energy'] }
     
     df = pd.DataFrame(data = together)
     bins = kwargs['bins']
     binList = [0] * (bins+1)
     if kwargs['maxE'] == 0:
-        if df['Surface 1'].max() > df['Surface 2'].max():
-            maxE = df['Surface 1'].max()
+        if df[kwargs['s1']].max() > df[kwargs['s2']].max():
+            maxE = df[kwargs['s1']].max()
         else:
-            maxE = df['Surface 2'].max()
+            maxE = df[kwargs['s2']].max()
     else:
         maxE = kwargs['maxE']
     minE = kwargs['minE']
@@ -100,6 +102,6 @@ def eComp(firstLib, secondLib, particle, **kwargs):
     for i in range(bins+1):
         binList[i] = round(step * i,2)
 
-    ax = df.plot.hist(bins = binList, xticks = binList, xlim = [0, maxE], figsize = figdim, alpha = 0.5, xlabel = "Energy in MeV")
+    ax = df.plot.hist(bins = binList, xticks = binList, xlim = [0, maxE], figsize = kwargs['figdim'], alpha = 0.5, xlabel = "Energy in MeV")
     fig = ax.get_figure()
     return fig
