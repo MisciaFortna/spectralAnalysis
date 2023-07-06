@@ -5,8 +5,11 @@
 #   - phsp_2_csv: converts phsp file to csv
 #       @Inputs: fName: File Name (sans file type)
 #       @Outputs: A Saved CSV File
-#   - txt_2_csv: converts txt file to csv (NB txt file MUST BE COMMA DELIM AT BEGINNING OF LINES)
-#       @Inputs: fName: File Name (sans file type)
+#   - txt_2_csv: converts txt file to csv 
+#       @Inputs: 
+#           * fName: File Name (sans file type)
+#           * kwargs :
+#               -- fixed: states if the txt has deliminators
 #       @Outputs: A Saved CSV File
 #   - read_val: creates a dictionary of particle information
 #       @Inputs:
