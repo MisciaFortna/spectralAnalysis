@@ -49,7 +49,6 @@ def colGen(fName):
                 if match:
                     l_no = int(match.group(1))
                     if l_no >= 11:
-                        print(match.group(1))
                         column_name = match.group(2).strip()
                         column_names.append(column_name)
 
@@ -74,7 +73,7 @@ def phsp_2_csv(fName):
             lines = (line.split(",") for line in stripped if line)
             with open(output_file, 'w') as outfile:
                 writer = csv.writer(outfile)
-                full_names = colGen(input_header)
+                full_names = colGen(fName)
                 writer.writerow(full_names)
                 #writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
                 writer.writerows(lines)
