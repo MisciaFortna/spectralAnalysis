@@ -34,7 +34,7 @@ import matplotlib.pyplot as plt
 # minE
 # figdim
 def ePlot(dataLib, particle, **kwargs):
-    defaultKwargs = { 'bins': 20, 'maxE': 0, 'minE': 0, 'figdim': [15,10] }
+    defaultKwargs = { 'bins': 30, 'maxE': 0, 'minE': 0, 'figdim': [30,10] }
     kwargs = { **defaultKwargs, **kwargs }
     bins = kwargs['bins']
     binList = [0] * (bins + 1)
@@ -81,7 +81,7 @@ def ePlot(dataLib, particle, **kwargs):
 # surface 1
 # surface 2
 def eComp(firstLib, secondLib, particle, **kwargs):
-    defaultKwargs = { 'bins': 20, 'maxE': 0, 'minE': 0, 'figdim': [15,10], 's1' : 'Surface 1', 's2' : 'Surface 2' }
+    defaultKwargs = { 'bins': 30, 'maxE': 0, 'minE': 0, 'figdim': [30,10], 's1' : 'Surface 1', 's2' : 'Surface 2' }
     kwargs = { **defaultKwargs, **kwargs }
     
     if particle == "frag":
