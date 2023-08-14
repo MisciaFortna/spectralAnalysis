@@ -2,14 +2,11 @@
 # @Author: Miscia Fortna
 # @Date: 15.06.2023
 # @Description: Library of Spectral Reading Functions from Previous Scripts
-#   - phsp_2_csv: converts phsp file to csv
+#   - phsp_2_csv: converts phsp file to csv (Needs header file otherwise gives default 10 columns)
 #       @Inputs: fName: File Name (sans file type)
 #       @Outputs: A Saved CSV File
-#   - txt_2_csv: converts txt file to csv 
-#       @Inputs: 
-#           * fName: File Name (sans file type)
-#           * kwargs :
-#               -- fixed: states if the txt has deliminators
+#   - txt_2_csv: converts txt file to csv (NB txt file MUST BE COMMA DELIM AT BEGINNING OF LINES)(Needs header file otherwise gives default 10 columns)
+#       @Inputs: fName: File Name (sans file type)
 #       @Outputs: A Saved CSV File
 #   - read_val: creates a dictionary of particle information
 #       @Inputs:
@@ -35,9 +32,33 @@ import re
 from tempfile import NamedTemporaryFile
 from shutil import move
 
+# Private Function
+def colGen(fName):
+    column_names = []
+    default_columns = ['empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle']
+    iFile = fName + ".header"
+    try:
+       test = open(iFile, 'r')
+    except OSError:
+        return default_columns
+    else:
+        test.close()
+        with open(iFile, 'r') as file:
+            for line in file:
+                match = re.match(r'\s*(\d+): (.+)', line)
+                if match:
+                    l_no = int(match.group(1))
+                    if l_no >= 11:
+                        column_name = match.group(2).strip()
+                        column_names.append(column_name)
+
+        full_col_names = default_columns + column_names
+        return full_col_names
+
 def phsp_2_csv(fName):
 
     input_file = fName + ".phsp"
+    input_header = fName + ".header"
     output_file = fName + ".csv"
 
     with open(input_file) as f, NamedTemporaryFile("w", dir=".", delete = False) as temp:
@@ -52,49 +73,31 @@ def phsp_2_csv(fName):
             lines = (line.split(",") for line in stripped if line)
             with open(output_file, 'w') as outfile:
                 writer = csv.writer(outfile)
-                writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
+                full_names = colGen(fName)
+                writer.writerow(full_names)
+                #writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
                 writer.writerows(lines)
     edit_output = pd.read_csv(output_file, index_col = False)
     edit_output.pop('empty')
     edit_output.to_csv(output_file, index = False)
 
-def txt_2_csv(fName, **kwargs):
-
-    defaultKwargs = { 'fixed': False }
-    kwargs = { **defaultKwargs, **kwargs }
+def txt_2_csv(fName):
 
     input_file = fName + ".txt"
+    input_header = fName + ".header"
     output_file = fName + ".csv"
-
-    if kwargs['fixed']:
-        with open(input_file, 'r') as infile:
-            stripped = (line.strip() for line in infile)
-            lines = (line.split(",") for line in stripped if line)
-            with open(output_file, 'w') as outfile:
-                writer = csv.writer(outfile)
-                writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
-                writer.writerows(lines)
-        edit_output = pd.read_csv(output_file, index_col = False)
-        edit_output.pop('empty')
-        edit_output.to_csv(output_file, index = False)
-    else:
-        with open(input_file) as f, NamedTemporaryFile("w", dir=".", delete = False) as temp:
-    
-            for line in f:
-                lineTemp = ' ' + line.strip()
-                lineTemp = re.sub("\s+", ",", lineTemp)
-                print(lineTemp, file=temp)
-
-            with open(temp.name, 'r') as infile:
-                stripped = (line.strip() for line in infile)
-                lines = (line.split(",") for line in stripped if line)
-                with open(output_file, 'w') as outfile:
-                    writer = csv.writer(outfile)
-                    writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
-                    writer.writerows(lines)
-        edit_output = pd.read_csv(output_file, index_col = False)
-        edit_output.pop('empty')
-        edit_output.to_csv(output_file, index = False)
+    with open(input_file, 'r') as infile:
+        stripped = (line.strip() for line in infile)
+        lines = (line.split(",") for line in stripped if line)
+        with open(output_file, 'w') as outfile:
+            writer = csv.writer(outfile)
+            full_names = colGen(input_header)
+            writer.writerow(full_names)
+            #writer.writerow(('empty','x','y','z','cos(x)','cos(y)','energy','weight','particle','neg_cos(z)','first_particle'))
+            writer.writerows(lines)
+    edit_output = pd.read_csv(output_file, index_col = False)
+    edit_output.pop('empty')
+    edit_output.to_csv(output_file, index = False)
 
 # b1 save
 # vf4 particles

@@ -34,26 +34,54 @@ import matplotlib.pyplot as plt
 # minE
 # figdim
 def ePlot(dataLib, particle, **kwargs):
-    defaultKwargs = { 'bins': 20, 'maxE': dataLib[particle]['energy'].max(), 'minE': 0, 'figdim': [15,10] }
+    defaultKwargs = { 'bins': 30, 'maxE': 0, 'minE': 0, 'figdim': [30,10] }
     kwargs = { **defaultKwargs, **kwargs }
     bins = kwargs['bins']
     binList = [0] * (bins + 1)
     maxE = kwargs['maxE']
     minE = kwargs['minE']
-    step = (maxE-minE) / bins
     figdim = kwargs['figdim']
-    for j in range(0,bins + 1):
-        binList[j] = step * j
-    plot = dataLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [minE, maxE], xlabel = 'Energy (MeV)', figsize = figdim, grid = 1)
-    fig = plot.get_figure()
+
+    if particle == 'frag':
+
+        fragList = []
+        dataSet = []
+    
+        for key in dataLib.keys():
+            if key.startswith('10000'):
+                fragList.append(key)
+    
+        for i in fragList:
+            dataSet.append(dataLib[i])
+    
+        particleLib = pd.concat(dataSet, ignore_index = 1)
+    else:
+        particleLib = dataLib
+    if maxE == 0 and particle == "frag":
+        maxE = particleLib['energy'].max()
+    elif maxE == 0:
+        maxE = particleLib[particle]['energy'].max()
+    step = (maxE-minE) / bins
+    if particle == "frag":
+        for j in range(0,bins + 1):
+            binList[j] = step * j
+        plot = particleLib.plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [minE, maxE], xlabel = 'Energy (MeV)', figsize = figdim, grid = 1)
+        fig = plot.get_figure()
+    else:
+        for j in range(0,bins + 1):
+            binList[j] = step * j
+        plot = particleLib[particle].plot.hist(column=['energy'], bins = binList, xticks = binList, xlim = [minE, maxE], xlabel = 'Energy (MeV)', figsize = figdim, grid = 1)
+        fig = plot.get_figure()
     return fig
 
 # bins
 # maxE
 # mineE
 # figdim
+# surface 1
+# surface 2
 def eComp(firstLib, secondLib, particle, **kwargs):
-    defaultKwargs = { 'bins': 20, 'maxE': 0, 'minE': 0, 'figdim': [15,10], 's1' : 'Surface 1', 's2' : 'Surface 2' }
+    defaultKwargs = { 'bins': 30, 'maxE': 0, 'minE': 0, 'figdim': [30,10], 's1' : 'Surface 1', 's2' : 'Surface 2' }
     kwargs = { **defaultKwargs, **kwargs }
     
     if particle == "frag":
